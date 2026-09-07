@@ -1,5 +1,6 @@
 # TryHackMe-Recruit-Writeup
 Detailed write-up for the TryHackMe Recruit Web Challenge, covering reconnaissance, enumeration, SSRF/local file access, credential disclosure, SQL injection, and privilege escalation.
+https://tryhackme.com/room/recruitwebchallenge
 
 # TryHackMe - Recruit Writeup
 
@@ -19,7 +20,7 @@ In this challenge, the attack chain involved:
 - Administrative Access
 
 ---
-
+```
 ## Attack Chain
 
 Nmap
@@ -45,7 +46,7 @@ Admin Credentials
 Admin Access
    ↓
 Flag
-
+```
 ---
 
 ## 1. Reconnaissance
@@ -239,10 +240,13 @@ This confirmed that the SQL injection successfully led to administrator account 
 
 ![SQL Injection Error](images/admin-login.png)
 
----
+```markdown
 ## 10.Attack Chain
 The complete attack chain was:
 
+Reconnaissance
+  |
+  v
 Nmap
   |
   v
@@ -299,7 +303,7 @@ Administrator Credentials
   v
 Admin Access
 
----
+```
 
 ## 11.Conclusion
 
@@ -330,6 +334,7 @@ The key lesson is that vulnerabilities such as directory listing, information di
 HR Flag
 THM{LOGGED_IN_USER}
 
+```markdown
 ## 15.Final Attack Path
 
 Enumeration
@@ -355,3 +360,4 @@ users Table
 Admin Credentials
     ↓
 Administrator Access
+```
