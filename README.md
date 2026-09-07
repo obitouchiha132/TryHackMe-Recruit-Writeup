@@ -90,6 +90,8 @@ The /mail directory was particularly interesting.
 
 The `/mail/mail.log` file was publicly accessible and exposed internal deployment information.
 
+![Nmap Scan](images/mail-log.png)
+
 The mail log revealed:
 
 - The **HR username is `hr`**.
@@ -101,9 +103,28 @@ This disclosure provided the next step in the attack chain: obtaining the HR cre
 
 ![Mail Log](images/mail-log_2.png)
 
-## 4. SSRF / Local File Access
+## 4.API Documentation Discovery
+
+After reviewing the exposed mail.log, I checked the application's API documentation to understand how the recruitment portal handles candidate CVs.
+The API documentation was available at:`/api.php`
+
+The documentation revealed an endpoint for fetching candidate CVs:
+```
+/file.php?cv=<URL>
+```
+The important part here is that the application accepts a URL as user-controlled input through the cv parameter. This suggested that the server may be making requests to the supplied resource on behalf of the user.
+This became an interesting attack surface because the functionality could potentially be abused to make the server access resources that should not be directly accessible.
+
+![Mail Log](images/api.png)
+
+Next: I tested the cv parameter to determine whether it could be abused for SSRF / local file access.
+
+## 5. SSRF / Local File Access
 
 ### The application contained a file endpoint:
+
+![Mail Log](images/file-endpoint.png)
+
 ```
 /file.php?cv=
 ```
@@ -121,3 +142,5 @@ I then tested:
 ```
 The application returned the PHP source code of `config.php`.
 This exposed sensitive application configuration and credentials.
+
+![Mail Log](images/config-file.png)
