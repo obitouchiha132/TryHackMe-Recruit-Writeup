@@ -223,4 +223,18 @@ Since the users table contained username and password columns, I queried those f
 ' UNION SELECT NULL,GROUP_CONCAT(username,':',password SEPARATOR '<br>'),NULL,NULL FROM users-- -
 ```
 This returned the stored user credentials, including the administrator account.
+```
+admin:admin@001admin
+```
 The administrator credentials were then used for the final administrative login.
+
+## 9.Admin Access
+
+After extracting the administrator credentials from the users table, I used them to log in to the recruitment portal.
+The login was successful, and the application now displayed the ADMIN interface instead of the HR interface.
+
+The admin dashboard also revealed the final flag:
+`THM{LOGGED_IN_ADM1N1}`
+This confirmed that the SQL injection successfully led to administrator account takeover.
+
+![SQL Injection Error](images/admin-login.png)
