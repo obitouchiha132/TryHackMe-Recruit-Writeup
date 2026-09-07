@@ -144,3 +144,19 @@ The application returned the PHP source code of `config.php`.
 This exposed sensitive application configuration and credentials.
 
 ![Mail Log](images/config-file.png)
+
+The configuration file contained temporary HR credentials, including the HR password. This was an Information Disclosure / Credential Disclosure vulnerability.
+```php
+$HR_PASSWORD = (hrpassword123);
+```
+
+## 5. HR Login
+
+The credentials obtained from the exposed `config.php` file were used to log in to the HR account successfully.
+
+**Username:** `hr`  
+**Password:** `hrpassword123`
+
+![HR Login](images/hr-login.png)
+
+
