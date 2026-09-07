@@ -238,3 +238,120 @@ The admin dashboard also revealed the final flag:
 This confirmed that the SQL injection successfully led to administrator account takeover.
 
 ![SQL Injection Error](images/admin-login.png)
+
+---
+## 10.Attack Chain
+The complete attack chain was:
+
+Nmap
+  |
+  v
+Web Service Discovery
+  |
+  v
+FFUF Directory Enumeration
+  |
+  v
+/mail/mail.log
+  |
+  v
+Information Disclosure
+  |
+  v
+API Documentation
+  |
+  v
+/file.php?cv=<URL>
+  |
+  v
+file://config.php
+  |
+  v
+config.php Disclosure
+  |
+  v
+HR Credentials
+  |
+  v
+HR Login
+  |
+  v
+Candidate Search
+  |
+  v
+SQL Injection
+  |
+  v
+UNION SELECT
+  |
+  v
+Database Enumeration
+  |
+  v
+users Table
+  |
+  v
+username + password
+  |
+  v
+Administrator Credentials
+  |
+  v
+Admin Access
+
+---
+
+## 11.Conclusion
+
+The Recruit challenge demonstrates how multiple small security weaknesses can be chained together to compromise an application.
+The initial directory enumeration exposed the /mail directory. The exposed mail.log revealed that HR credentials were stored in config.php. The CV retrieval functionality then allowed local file access through the file:// wrapper, exposing the configuration file and HR password.
+After logging in as HR, the candidate search parameter was found to be vulnerable to SQL Injection. UNION-based SQL Injection allowed the database structure to be enumerated and the users table to be queried. Finally, the administrator credentials were extracted from the database.
+The key lesson is that vulnerabilities such as directory listing, information disclosure, unsafe file retrieval, hardcoded credentials, and SQL Injection can become significantly more dangerous when chained together.
+
+## 12.Key Takeaways
+- Never expose sensitive directories through directory listing.
+- Sensitive logs should never be publicly accessible.
+- User-controlled file/URL parameters must be strictly validated.
+- Dangerous PHP stream wrappers such as file:// should be handled carefully.
+- Credentials should never be hardcoded in application configuration files.
+- SQL queries must use prepared statements / parameterized queries.
+- Database errors should not be exposed to users.
+- Applications should follow the principle of least privilege.
+- Sensitive credentials should be securely hashed and protected.
+  
+## 13.Tools Used
+- Nmap
+- FFUF
+- Firefox
+- Manual Web Enumeration
+- UNION-based SQL Injection
+  
+## 14.Flags Obtained
+HR Flag
+THM{LOGGED_IN_USER}
+
+## 15.Final Attack Path
+
+Enumeration
+    ↓
+Information Disclosure
+    ↓
+Local File Access
+    ↓
+config.php
+    ↓
+HR Credentials
+    ↓
+HR Login
+    ↓
+SQL Injection
+    ↓
+UNION SQLi
+    ↓
+Database Enumeration
+    ↓
+users Table
+    ↓
+Admin Credentials
+    ↓
+Administrator Access
